@@ -1,33 +1,25 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from 'react'
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import * as Clipboard from "expo-clipboard";
-import { useAgentStore } from "@/store/agentStore";
-import { useAgent } from "@/hooks/useAgent";
-import { useWalletStore } from "@/store/walletStore";
-import { useBalance } from "@/hooks/useBalance";
-import { AgentMessage } from "@/components/agent/AgentMessage";
-import { ApprovalModal } from "@/components/agent/ApprovalModal";
-import { ellipsify } from "@/utils/ellipsify";
+  View, Text, TextInput, TouchableOpacity, FlatList,
+  KeyboardAvoidingView, Platform, ScrollView,
+} from 'react-native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
+import * as Clipboard from 'expo-clipboard'
+import { useAgentStore } from '@/store/agentStore'
+import { useAgent } from '@/hooks/useAgent'
+import { useWalletStore } from '@/store/walletStore'
+import { useBalance } from '@/hooks/useBalance'
+import { AgentMessage } from '@/components/agent/AgentMessage'
+import { ApprovalModal } from '@/components/agent/ApprovalModal'
+import { ellipsify } from '@/utils/ellipsify'
 
 const SUGGESTED_PROMPTS = [
-  { icon: "💰", text: "What's my balance?" },
-  { icon: "⇄", text: "Swap 0.1 SOL to USDC" },
-  { icon: "📤", text: "How should I invest $50?" },
-];
+  { icon: '💰', text: "What's my balance?" },
+  { icon: '⇄',  text: 'Swap 0.1 SOL to USDC' },
+  { icon: '🪙', text: 'Show my tokens' },
+  { icon: '📊', text: 'How is the market?' },
+]
 
 function TypingIndicator({ name }: { name: string }) {
   return (
@@ -39,16 +31,14 @@ function TypingIndicator({ name }: { name: string }) {
         ))}
       </View>
     </View>
-  );
+  )
 }
 
 function WalletPill() {
-  const { address, solBalance, totalUsdValue, isLoading } = useWalletStore();
-  const { refresh } = useBalance();
+  const { address, solBalance, totalUsdValue, isLoading } = useWalletStore()
+  const { refresh } = useBalance()
 
-  useEffect(() => {
-    if (address) refresh();
-  }, [address]);
+  useEffect(() => { if (address) refresh() }, [address])
 
   return (
     <View className="bg-card border border-border rounded-2xl mx-4 mb-3 overflow-hidden">
@@ -58,11 +48,9 @@ function WalletPill() {
             <Text className="text-accent text-base">◈</Text>
           </View>
           <View className="flex-1">
-            <Text className="text-text-muted text-xs uppercase tracking-wider">
-              Balance
-            </Text>
+            <Text className="text-text-muted text-xs uppercase tracking-wider">Balance</Text>
             <Text className="text-text-primary text-lg font-bold">
-              {isLoading ? "—" : `${solBalance.toFixed(4)} SOL`}
+              {isLoading ? '—' : `${solBalance.toFixed(4)} SOL`}
             </Text>
           </View>
         </View>
@@ -87,36 +75,36 @@ function WalletPill() {
         </TouchableOpacity>
       )}
     </View>
-  );
+  )
 }
 
 export default function AgentHome() {
-  const { messages, isThinking, pendingApproval, config } = useAgentStore();
-  const { approve, reject, sendMessage } = useAgent();
-  const router = useRouter();
-  const [input, setInput] = useState("");
-  const listRef = useRef<FlatList>(null);
-  const agentName = config?.agentName ?? "SAGE";
-  const insets = useSafeAreaInsets();
+  const { messages, isThinking, pendingApproval, config } = useAgentStore()
+  const { approve, reject, sendMessage } = useAgent()
+  const router = useRouter()
+  const [input, setInput]   = useState('')
+  const listRef             = useRef<FlatList>(null)
+  const agentName           = config?.agentName ?? 'SAGE'
+  const insets              = useSafeAreaInsets()
 
   useEffect(() => {
     if (messages.length > 0) {
-      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100)
     }
-  }, [messages.length, isThinking]);
+  }, [messages.length, isThinking])
 
   async function handleSend(text?: string) {
-    const message = (text ?? input).trim();
-    if (!message || isThinking) return;
-    setInput("");
-    await sendMessage(message);
+    const message = (text ?? input).trim()
+    if (!message || isThinking) return
+    setInput('')
+    await sendMessage(message)
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-3 border-b border-divider">
@@ -125,9 +113,7 @@ export default function AgentHome() {
               <Text className="text-accent text-xl">✦</Text>
             </View>
             <View>
-              <Text className="text-text-primary font-bold text-base">
-                {agentName}
-              </Text>
+              <Text className="text-text-primary font-bold text-base">{agentName}</Text>
               <Text className="text-text-muted text-xs">AI Wallet Agent</Text>
             </View>
           </View>
@@ -136,7 +122,7 @@ export default function AgentHome() {
               <Text className="text-orange text-xs font-bold">DEVNET</Text>
             </View>
             <TouchableOpacity
-              onPress={() => router.push("/(app)/settings")}
+              onPress={() => router.push('/(app)/settings')}
               className="bg-card border border-border w-9 h-9 rounded-full items-center justify-center"
               activeOpacity={0.7}
             >
@@ -156,21 +142,16 @@ export default function AgentHome() {
           data={messages}
           keyExtractor={(m) => m.id}
           contentContainerStyle={{ padding: 16, flexGrow: 1 }}
-          renderItem={({ item }) => (
-            <AgentMessage message={item} agentName={agentName} />
-          )}
+          renderItem={({ item }) => <AgentMessage message={item} agentName={agentName} />}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center px-6 gap-6">
               <View className="items-center gap-3">
                 <View className="w-20 h-20 rounded-full bg-accent/10 border-2 border-accent/30 items-center justify-center">
                   <Text className="text-4xl">✦</Text>
                 </View>
-                <Text className="text-text-primary font-bold text-xl">
-                  {agentName}
-                </Text>
+                <Text className="text-text-primary font-bold text-xl">{agentName}</Text>
                 <Text className="text-text-muted text-sm text-center leading-6 max-w-xs">
-                  Your AI wallet companion. Ask me to check balances, send
-                  tokens, swap, stake, or anything else.
+                  Your AI wallet companion. Ask me to check balances, send tokens, swap, stake, or anything else.
                 </Text>
               </View>
 
@@ -187,9 +168,7 @@ export default function AgentHome() {
                       className="bg-card border border-border rounded-2xl px-4 py-3 flex-row items-center gap-3"
                     >
                       <Text className="text-lg">{p.icon}</Text>
-                      <Text className="text-text-primary text-sm flex-1">
-                        {p.text}
-                      </Text>
+                      <Text className="text-text-primary text-sm flex-1">{p.text}</Text>
                       <Text className="text-text-muted">→</Text>
                     </TouchableOpacity>
                   ))}
@@ -197,16 +176,11 @@ export default function AgentHome() {
               </View>
             </View>
           }
-          ListFooterComponent={
-            isThinking ? <TypingIndicator name={agentName} /> : null
-          }
+          ListFooterComponent={isThinking ? <TypingIndicator name={agentName} /> : null}
         />
 
         {/* Input bar */}
-        <View
-          style={{ paddingBottom: insets.bottom + 90 }}
-          className="px-4 pt-3 border-t border-divider bg-bg"
-        >
+        <View style={{ paddingBottom: insets.bottom + 90 }} className="px-4 pt-3 border-t border-divider bg-bg">
           <View className="flex-row items-end gap-2">
             <TextInput
               className="flex-1 bg-card border border-border rounded-2xl px-4 py-3 text-text-primary text-base max-h-28"
@@ -221,7 +195,7 @@ export default function AgentHome() {
             />
             <TouchableOpacity
               className={`w-12 h-12 rounded-2xl items-center justify-center ${
-                input.trim() && !isThinking ? "bg-accent" : "bg-border"
+                input.trim() && !isThinking ? 'bg-accent' : 'bg-border'
               }`}
               onPress={() => handleSend()}
               disabled={!input.trim() || isThinking}
@@ -239,5 +213,5 @@ export default function AgentHome() {
         onReject={reject}
       />
     </SafeAreaView>
-  );
+  )
 }
